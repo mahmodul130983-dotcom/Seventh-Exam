@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - SEVENTH EXAM</title>
+  
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --secondary: #ec4899;
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+      --card-bg: rgba(255, 255, 255, 0.06);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      
+      --correct-text: #4ade80;
+      --wrong-text: #f87171;
+      --skipped-text: #fbbf24;
+
+      --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Hind Siliguri', 'Outfit', sans-serif;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 30px 16px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* Dashboard Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 16px;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      padding: 24px;
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+    }
+
+    .header-title h1 {
+      font-size: 26px;
+      font-weight: 800;
+      background: linear-gradient(to right, #ffffff, #c7d2fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-title p {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .action-btns {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: #a5b4fc;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* Stat Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 25px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      padding: 20px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 14px;
+      background: rgba(99, 102, 241, 0.15);
+      color: #818cf8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 22px;
+    }
+
+    .stat-info h3 {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-info .value {
+      font-size: 24px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-top: 2px;
+    }
+
+    /* Search & Filter Bar */
+    .filter-bar {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .filter-bar i {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 16px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 14px 20px 14px 48px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      color: #fff;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.3s;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Student Results Cards */
+    .results-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .student-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 20px;
+      transition: all 0.3s;
+    }
+
+    .student-card:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .student-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .score-badge {
+      background: linear-gradient(135deg, #6366f1, #ec4899);
+      color: #fff;
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-weight: 800;
+      font-size: 16px;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .card-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      background: rgba(15, 23, 42, 0.4);
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+      font-size: 14px;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-item span {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .stat-item strong {
+      font-size: 16px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .view-details-btn {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: var(--wrong-text);
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .view-details-btn:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
+    /* Modal Styling */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #1e1b4b;
+      border: 1px solid var(--card-border);
+      width: 90%;
+      max-width: 650px;
+      max-height: 80vh;
+      border-radius: 20px;
+      padding: 24px;
+      overflow-y: auto;
+      box-shadow: var(--glass-shadow);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .wrong-q-item {
+      background: rgba(15, 23, 42, 0.6);
+      border-left: 4px solid #ef4444;
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .wrong-q-item strong {
+      display: block;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .loader {
+      text-align: center;
+      padding: 50px;
+      color: var(--text-muted);
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header Bar -->
+    <div class="header">
+      <div class="header-title">
+        <h1><i class="fa-solid fa-chart-line" style="color: #818cf8;"></i> EXAM CONTROL PANEL</h1>
+        <p>SEVENTH EXAM (GK, Bangla, English)</p>
+      </div>
+      <div class="action-btns">
+        <button class="btn" onclick="fetchResults()"><i class="fa-solid fa-rotate-right"></i> Refresh data</button>
+        <button class="btn" onclick="window.print()"><i class="fa-solid fa-print"></i> Print report</button>
+      </div>
+    </div>
+
+    <!-- Analytics Stat Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+        <div class="stat-info">
+          <h3>Total Students</h3>
+          <div class="value" id="total-students">0</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="color: #4ade80;"><i class="fa-solid fa-trophy"></i></div>
+        <div class="stat-info">
+          <h3>Highest Number</h3>
+          <div class="value" id="top-score">0.00</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="color: #ec4899;"><i class="fa-solid fa-calculator"></i></div>
+        <div class="stat-info">
+          <h3>Avg Number</h3>
+          <div class="value" id="avg-score">0.00</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="color: #fbbf24;"><i class="fa-solid fa-bullseye"></i></div>
+        <div class="stat-info">
+          <h3>Avg Accuracy</h3>
+          <div class="value" id="avg-accuracy">0%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Input -->
+    <div class="filter-bar">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="search-input" class="search-input" placeholder="Search name..." onkeyup="filterResults()">
+    </div>
+
+    <!-- Results List -->
+    <div class="results-list" id="results-container">
+      <div class="loader"><i class="fa-solid fa-spinner fa-spin"></i> ডাটা লোড হচ্ছে...</div>
+    </div>
+  </div>
+
+  <!-- Detailed Modal for Wrong Questions -->
+  <div class="modal-overlay" id="details-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-student-name" style="color: #fff; font-size: 18px;">Wrong answer review</h3>
+        <button class="close-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="modal-body-content"></div>
+    </div>
+  </div>
+
+  <script>
+    // ⚙️ ফায়ারবেজ কনফিগারেশন
+    const firebaseConfig = {
+      apiKey: "AIzaSyCTgSqtcDRtvfbIECDFEv_2jAEgModArXc",
+      authDomain: "gk-exam-2.firebaseapp.com",
+      projectId: "gk-exam-2",
+      storageBucket: "gk-exam-2.firebasestorage.app",
+      messagingSenderId: "52008698353",
+      appId: "1:52008698353:web:08a24e1451711ab72f0450",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let allExamData = [];
+
+    // ফায়ারবেজ 'quiz_results 6' থেকে রেজাল্ট লোড করা
+    function fetchResults() {
+      const container = document.getElementById('results-container');
+      container.innerHTML = '<div class="loader"><i class="fa-solid fa-spinner fa-spin"></i> ডাটা আপডেট হচ্ছে...</div>';
+
+      db.collection("quiz_results 6").orderBy("submittedAt", "desc").get()
+      .then((querySnapshot) => {
+        if (querySnapshot.empty) {
+          container.innerHTML = '<p style="text-align:center; padding: 40px; color: var(--text-muted);">এখনও কেউ পরীক্ষা দেয়নি।</p>';
+          updateAnalytics([]);
+          return;
+        }
+
+        allExamData = [];
+        querySnapshot.forEach((doc) => {
+          allExamData.push(doc.data());
+        });
+
+        updateAnalytics(allExamData);
+        renderCards(allExamData);
+      })
+      .catch((error) => {
+        console.error("ডাটা আনার সমস্যা: ", error);
+        container.innerHTML = '<p style="color:var(--wrong-text); text-align:center; padding: 30px;">ডাটা লোড করতে সমস্যা হয়েছে! কনফিগারেশন যাচাই করুন।</p>';
+      });
+    }
+
+    // ওভারঅল অ্যানালিটিক্স হিসেব করা
+    function updateAnalytics(dataList) {
+      const total = dataList.length;
+      document.getElementById('total-students').innerText = total;
+
+      if (total === 0) {
+        document.getElementById('top-score').innerText = '0.00';
+        document.getElementById('avg-score').innerText = '0.00';
+        document.getElementById('avg-accuracy').innerText = '0%';
+        return;
+      }
+
+      const scores = dataList.map(item => parseFloat(item.totalScore || item.score || 0));
+      const maxScore = Math.max(...scores);
+      const sumScore = scores.reduce((a, b) => a + b, 0);
+      const avgScore = (sumScore / total).toFixed(2);
+
+      const accuracies = dataList.map(item => parseFloat(item.accuracyPercentage || 0));
+      const avgAcc = (accuracies.reduce((a, b) => a + b, 0) / total).toFixed(1);
+
+      document.getElementById('top-score').innerText = maxScore.toFixed(2);
+      document.getElementById('avg-score').innerText = avgScore;
+      document.getElementById('avg-accuracy').innerText = `${avgAcc}%`;
+    }
+
+    // কার্ডগুলো পেজে প্রদর্শন করা
+    function renderCards(dataList) {
+      const container = document.getElementById('results-container');
+      container.innerHTML = '';
+
+      if (dataList.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color: var(--text-muted); padding: 20px;">কোনো ফলাফল পাওয়া যায়নি!</p>';
+        return;
+      }
+
+      dataList.forEach((data, index) => {
+        const studentName = data.studentName || data.name || 'Unknown Student';
+        const totalScore = data.totalScore || data.score || '0.00';
+        const correct = data.correctAnswers || data.correct || 0;
+        const wrong = data.wrongAnswers || data.wrong || 0;
+        const skipped = data.skippedQuestions || data.skipped || 0;
+        const accuracy = data.accuracyPercentage ? `${data.accuracyPercentage}%` : 'N/A';
+        const timeFormatted = data.submittedAt ? new Date(data.submittedAt).toLocaleString('bn-BD') : (data.time ? new Date(data.time.toDate()).toLocaleString('bn-BD') : 'N/A');
+
+        const cardHTML = `
+          <div class="student-card">
+            <div class="card-top">
+              <div class="student-name">
+                <i class="fa-solid fa-user-graduate" style="color: #818cf8;"></i>
+                ${studentName}
+              </div>
+              <div class="score-badge">স্কোর: ${totalScore}</div>
+            </div>
+
+            <div class="card-stats">
+              <div class="stat-item">
+                <span>সঠিক (+১)</span>
+                <strong style="color: var(--correct-text);">${correct}</strong>
+              </div>
+              <div class="stat-item">
+                <span>ভুল (-০.২৫)</span>
+                <strong style="color: var(--wrong-text);">${wrong}</strong>
+              </div>
+              <div class="stat-item">
+                <span>স্কিপড (০)</span>
+                <strong style="color: var(--skipped-text);">${skipped}</strong>
+              </div>
+              <div class="stat-item">
+                <span>অ্যাকিউরেসি</span>
+                <strong style="color: #a5b4fc;">${accuracy}</strong>
+              </div>
+              <div class="stat-item" style="grid-column: span 2;">
+                <span>পরীক্ষার সময়</span>
+                <strong style="font-size: 13px; color: var(--text-muted);">${timeFormatted}</strong>
+              </div>
+            </div>
+
+            <button class="view-details-btn" onclick="openDetailsModal(${index})">
+              <i class="fa-solid fa-triangle-exclamation"></i> Wrong ans question data(${wrong})
+            </button>
+          </div>
+        `;
+
+        container.innerHTML += cardHTML;
+      });
+    }
+
+    // নাম দিয়ে সার্চ ফিল্টার
+    function filterResults() {
+      const query = document.getElementById('search-input').value.toLowerCase().trim();
+      const filtered = allExamData.filter(item => {
+        const name = item.studentName || item.name || '';
+        return name.toLowerCase().includes(query);
+      });
+      renderCards(filtered);
+    }
+
+    // ভুল প্রশ্ন ও উত্তরের পপ-আপ মডাল
+    function openDetailsModal(dataIndex) {
+      const studentData = allExamData[dataIndex];
+      const name = studentData.studentName || studentData.name || 'Student';
+      const wrongList = studentData.wrongQuestionsBreakdown || studentData.wrongQuestions || [];
+
+      document.getElementById('modal-student-name').innerText = `${name}-এর ভুল করা প্রশ্নের তালিকা`;
+      const modalBody = document.getElementById('modal-body-content');
+      modalBody.innerHTML = '';
+
+      if (wrongList.length === 0) {
+        modalBody.innerHTML = '<p style="color: var(--correct-text); text-align: center; padding: 20px;"><i class="fa-solid fa-circle-check"></i> মাশাল্লাহ! শিক্ষার্থী কোনো প্রশ্ন ভুল করেনি (সবগুলো সঠিক বা স্কিপড)।</p>';
+      } else {
+        wrongList.forEach((q, i) => {
+          const qText = q.questionText || q.question || 'Question';
+          const givenAns = q.givenAnswer || q.selectedAnswer || 'N/A';
+          const correctAns = q.correctAnswer || 'N/A';
+
+          modalBody.innerHTML += `
+            <div class="wrong-q-item">
+              <strong>${i + 1}. ${qText}</strong>
+              <div style="color: var(--wrong-text);">Your answer: ${givenAns}</div>
+              <div style="color: var(--correct-text);">Right Answer: ${correctAns}</div>
+            </div>
+          `;
+        });
+      }
+
+      document.getElementById('details-modal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('details-modal').classList.remove('active');
+    }
+
+    // প্রথমবার পেজ লোড হলে ডাটা নিয়ে আসা
+    window.onload = fetchResults;
+  </script>
+</body>
+</html>
