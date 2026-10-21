@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DU B Unit GK Master Exam System</title>
+  <title>7th exam including GK,Bangla,English</title>
   
   <!-- Google Fonts & Font Awesome Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -561,7 +561,7 @@
     <!-- 1. Name Input / Welcome View -->
     <div id="user-info-view" class="user-info-screen">
       <div class="badge-tag">
-        <i class="fa-solid fa-graduation-cap"></i> DU B UNIT MODEL TEST
+        <i class="fa-solid fa-graduation-cap"></i> DU B UNIT 
       </div>
       <h1 class="welcome-title">SEVENTH EXAM</h1>
       <p class="welcome-subtitle">including gk, bangla, english</p>
@@ -583,7 +583,7 @@
           <i class="fa-solid fa-user-circle" style="color: #818cf8;"></i>
           <span id="display-name">Student</span>
         </div>
-        <span class="progress-pill" id="progress-text">প্রশ্ন 1/40</span>
+        <span class="progress-pill" id="progress-text">প্রশ্ন 1/80</span>
       </div>
 
       <div class="progress-bar-container">
@@ -605,11 +605,11 @@
       <!-- Navigation & Action Buttons -->
       <div class="nav-actions">
         <button class="nav-btn" id="prev-btn" onclick="navigateQuestion(-1)">
-          <i class="fa-solid fa-chevron-left"></i> পূর্ববর্তী
+          <i class="fa-solid fa-chevron-left"></i> Previous
         </button>
 
         <button class="nav-btn skip-btn" id="skip-btn" onclick="skipCurrentQuestion()">
-          <i class="fa-solid fa-forward"></i> স্কিপ করুন
+          <i class="fa-solid fa-forward"></i> Skip
         </button>
 
         <button class="nav-btn" id="next-btn" onclick="navigateQuestion(1)">
@@ -617,7 +617,7 @@
         </button>
 
         <button class="submit-exam-btn" onclick="openSubmitModal()">
-          <i class="fa-solid fa-paper-plane"></i> সাবমিট করুন
+          <i class="fa-solid fa-paper-plane"></i> Submit
         </button>
       </div>
     </div>
@@ -625,36 +625,36 @@
     <!-- 3. Dynamic Results Screen -->
     <div class="result-screen" id="result-view">
       <div class="badge-tag" id="performance-badge">
-        <i class="fa-solid fa-trophy"></i> ফলাফল প্রস্তুত
+        <i class="fa-solid fa-trophy"></i> Results are ready
       </div>
-      <h2 style="font-size: 26px; font-weight: 700; margin-top: 8px;">আপনার ফলাফলের বিবরণ</h2>
-      <p style="color: var(--text-muted); font-size: 14px;">ফলাফল 'quiz_results 6' ডেটাবেজে সফলভাবে সংরক্ষিত হয়েছে</p>
+      <h2 style="font-size: 26px; font-weight: 700; margin-top: 8px;">Results display</h2>
+      <p style="color: var(--text-muted); font-size: 14px;">Results 'quiz_results 6' Stored in the data base</p>
       
       <div class="score-circle">
         <div class="number" id="final-score">০.০০</div>
-        <span style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">মোট নম্বর / ৪০</span>
+        <span style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Total Number / 80</span>
       </div>
 
       <div class="score-details-grid">
         <div class="stat-card">
           <div class="val" style="color: var(--correct-text);" id="correct-count">০</div>
-          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">সঠিক (+১.০০)</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Right (+1.00)</div>
         </div>
         <div class="stat-card">
           <div class="val" style="color: var(--wrong-text);" id="wrong-count">০</div>
-          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">ভুল (-০.২৫)</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">ভুল (-0.25)</div>
         </div>
         <div class="stat-card">
           <div class="val" style="color: var(--skipped-text);" id="skipped-count">০</div>
-          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">স্কিপড (০)</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">skip (0)</div>
         </div>
         <div class="stat-card">
           <div class="val" style="color: #a5b4fc;" id="accuracy-rate">০%</div>
-          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">অ্যাকিউরেসি</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Accuracy</div>
         </div>
       </div>
 
-      <h3 style="text-align: left; font-size: 16px; margin-top: 20px; color: #cbd5e1;">প্রশ্নোত্তর এবং সলভ রিভিউ:</h3>
+      <h3 style="text-align: left; font-size: 16px; margin-top: 20px; color: #cbd5e1;">Ans and Review:</h3>
       <div class="review-section" id="review-list"></div>
     </div>
 
@@ -664,12 +664,12 @@
   <div class="modal-overlay" id="submit-modal">
     <div class="modal-content">
       <i class="fa-solid fa-circle-exclamation" style="font-size: 48px; color: #f59e0b; margin-bottom: 12px;"></i>
-      <h3 style="font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 8px;">পরীক্ষা শেষ করতে চান?</h3>
-      <p id="modal-summary-text" style="color: var(--text-muted); font-size: 14px;">আপনি সকল প্রশ্নের উত্তর দেননি।</p>
+      <h3 style="font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 8px;">Do you want to finish the exam?</h3>
+      <p id="modal-summary-text" style="color: var(--text-muted); font-size: 14px;">Ans the all questions baby.</p>
       
       <div class="modal-actions">
-        <button class="nav-btn" onclick="closeSubmitModal()">ফিরে যান</button>
-        <button class="submit-exam-btn" onclick="finalizeExam()">হ্যাঁ, জমা দিন</button>
+        <button class="nav-btn" onclick="closeSubmitModal()">Back to previous</button>
+        <button class="submit-exam-btn" onclick="finalizeExam()">yes, submit it</button>
       </div>
     </div>
   </div>
@@ -690,7 +690,7 @@
 
     // 40 Authentic DU B Unit GK Questions with Explanations
     const questionsDatabase = [
-      { question: "১. প্রাচীন বাংলার বিক্রমপুর কোন ঐতিহাসিক অঞ্চলের অন্তর্ভুক্ত ছিল?", options: ["বরেন্দ্র", "বঙ্গ", "রাঢ়", "সমতট"], correct: 1, explanation: "ব্যাখ্যা: বিক্রমপুর ছিল প্রাচীন বঙ্গ অঞ্চলের অন্তর্গত প্রধান নগরী ও সেন রাজাদের রাজধানী।" },
+      { question: "১. প্রাচীন বাংলার বিক্রমপুর কোন ঐতিহাসিক অঞ্চলের অন্তর্ভুক্ত ছিল?", options: ["বরেন্দ্র", "বঙ্গ", "রাঢ়", "সমতট"], correct: 1 },
       { question: "২. বাংলার ইতিহাসে 'মাৎস্যন্যায়' বলতে কী বোঝায়?", options: ["একটি প্রাচীন কৃষিব্যবস্থা", "রাজনৈতিক অরাজকতা ও শক্তিশালীর প্রভাব", "একটি বৌদ্ধ উৎসব", "সামরিক করব্যবস্থা"], correct: 1, explanation: "ব্যাখ্যা: শশাঙ্কের মৃত্যুর পর সপ্তম-অষ্টম শতকে বাংলায় কোনো স্থায়ী শাসক না থাকায় অরাজক পরিস্থিতিকে মাৎস্যন্যায়ের সাথে তুলনা করা হয়।" },
       { question: "৩. প্রাচীন বাংলার কোন বন্দরটি রোমান সাম্রাজ্যের সঙ্গে যোগাযোগের জন্য বিখ্যাত ছিল?", options: ["তাম্রলিপ্ত", "সপ্তগ্রাম", "চট্টগ্রাম", "সোনারগাঁও"], correct: 0, explanation: "ব্যাখ্যা: তাম্রলিপ্ত ছিল প্রাচীন বাংলার প্রধান আন্তর্জাতিক সমুদ্রবন্দর যার সাথে রোম ও দক্ষিণ-পূর্ব এশিয়ার বাণিজ্য সম্পর্ক ছিল।" },
       { question: "৪. সেন রাজবংশের শাসনামলে বাংলায় কোন ধর্মীয় প্রবণতা শক্তিশালী হয়?", options: ["শৈব ও বৈষ্ণব হিন্দুধর্ম", "জরথুস্ত্রবাদ", "শিন্তো ধর্ম", "প্রোটেস্ট্যান্ট ধর্ম"], correct: 0, explanation: "ব্যাখ্যা: পাল আমলের পর সেন রাজাদের সময়ে হিন্দু ধর্ম বিশেষ করে শৈব ও বৈষ্ণব মতবাদ রাষ্ট্রীয় পৃষ্ঠপোযকতা পায়।" },
@@ -746,7 +746,7 @@
     function startQuiz() {
       const inputVal = document.getElementById('user-name').value.trim();
       if (!inputVal) {
-        alert("অনুগ্রহ করে আপনার নাম প্রদান করুন!");
+        alert("please enter your name!");
         return;
       }
       userName = inputVal;
